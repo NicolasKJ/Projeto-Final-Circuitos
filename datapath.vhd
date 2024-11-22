@@ -240,6 +240,21 @@ MUX_SEQ: mux2pra1_10bits port map (
     saida => ComparaSelDig
 );
 
+MUX_DISPLAY_7BITS: mux2pra1_7bits port map (
+    sel => selMux23,       -- Controle de seleção do mux
+    x   => decMux4,        -- Primeira entrada de 7 bits (pode ser ajustada ao seu projeto)
+    y   => muxMux2,        -- Segunda entrada de 7 bits
+    saida => muxMux3       -- Saída do mux para o próximo estágio
+);
+
+MUX_DISPLAY_8BITS: mux2pra1_8bits port map (
+    sel => selMux45,       -- Controle de seleção do mux
+    x   => SomaSelDig_estendido, -- Primeira entrada de 8 bits
+    y   => SeqLevel,       -- Segunda entrada de 8 bits (sequência do nível)
+    saida => MuxSelDig     -- Saída do mux
+);
+
+
 -- MUX para selecionar entre rodadas ou tempo
 MUX_DISPLAY: mux2pra1_4bits port map (
     sel => selMux45, 
@@ -273,7 +288,6 @@ COMPARADOR_IGUAL: comp_igual4 port map (
         
 ---------------------DECODIFICADORES----------------------------
 
-Decodificadores para displays
     DECOD_DISPLAY_TEMPO: decod7seg port map (
         X => CounterTMux,
         Y => HEX0
