@@ -119,29 +119,7 @@ port(
     );
 end component;
 
-----------------------DECODIFICADOR-----------------------------
 
-DECOD_HEX0: decod7seg port map(
-    X => CounterTMux, -- Conectado ao contador de tempo (ou outro sinal de 4 bits)
-    Y => HEX0
-);
-
-DECOD_HEX1: decod7seg port map(
-    X => Round, -- Conectado ao contador de rodadas
-    Y => HEX1
-);
-
-DECOD_HEX2: decod7seg port map(
-    X => Level_time, -- Conectado ao nível de tempo (4 bits)
-    Y => HEX2
-);
-
-DECOD_HEX3: decod7seg port map(
-    X => Level_code, -- Código do nível
-    Y => HEX3
-);
-
--------------------COMPARADORES E SOMA--------------------------
 
 component comp is
 port (
@@ -158,6 +136,15 @@ port(
     );
 end component;
 
+component decod7seg is
+    port (
+    X:  in std_logic_vector(3 downto 0);
+    Y:  out std_logic_vector(6 downto 0) 
+    );
+end component;
+
+
+
 component soma is
 port(
     seq: in std_logic_vector(9 downto 0);
@@ -169,149 +156,198 @@ end component;
 --                      SIGNALS                               --
 --============================================================--
 
-signal selMux23, selMux45, end_game_interno, end_round_interno, clk_1, enableRegFinal: std_logic; --1 bit
-signal Round, Level_time, Level_code, SaidaCountT, SomaDigitada, SomaSelDig, CounterTMux: std_logic_vector(3 downto 0); -- 4 bits
-signal decMuxCode, decMuxRound, muxMux2, muxMux3, decMux4, Tempo, t, r, n: std_logic_vector(6 downto 0); -- 7 bits
-signal SomaSelDig_estendido,SeqLevel, RegFinal, valorfin_vector, MuxSelDig: std_logic_vector(7 downto 0); -- 8 bits
-signal N_unsigned: unsigned(3 downto 0);
-signal SeqDigitada, ComparaSelDig, SelecionadaROM, EntradaLEDS: std_logic_vector(9 downto 0); -- 10 bits
+signal end_game_interno, end_round_interno, clk_1, E5E4, R1R2, E1E2: std_logic; --1 bit
+signal Tempo, Round, SaidaSoma, SomaDigitada, SaidaMuxHEX4_1: std_logic_vector(3 downto 0); -- 4 bits
+signal SaidaDecodHEX2_1, SaidaDecodHEX2_2, SaidaMuxHEX2_2, SaidaMuxHEX3_1, SaidaDecodHex4: std_logic_vector(6 downto 0); -- 7 bits
+signal SeqLevel, SaidaMuxHEX1_HEX0, SaidaRegHEX1_HEX0, mux1, mux2: std_logic_vector(7 downto 0); -- 8 bits
+signal naosigned: unsigned(3 downto 0);
+signal SeqDigitada, SelecionadaROM, SaidaComp : std_logic_vector(9 downto 0); -- 10 bits
 
 begin
-
-
-DIV: Div_Freq port map (CLOCK_50, R2, clk_1); -- Para teste no emulador, comentar essa linha e usar o CLK_1Hz
-
-------------------------CONTADORES------------------------------
+clk_1 <= CLOCK_50;
+mux1 <= "000" & end_game_interno & Round;
+mux2 <= "1010" & SaidaSoma;
+E5E4 <= E5 or E4;
+R1R2 <= R1 xor R2;
+E1E2 <= E1 or E2;
+-- DIV: Div_Freq port map (CLOCK_50, R2, clk_1); -- Para teste no emulador, comentar essa linha e usar o CLK_1Hz
 
 -- Contador de tempo
 COUNTER_T: counter_time port map (
-    Enable => E1, 
+    Enable => E2, 
     Reset => R1, 
-    CLOCK => clk_1, 
-    load => "1010", -- Exemplo: configura limite de 10 segundos
+    CLOCK => CLK_1Hz, 
+    load => SeqLevel(7 downto 4), 
     end_time => end_time, 
     tempo => Tempo
 );
 
 -- Contador de rodadas
 COUNTER_R: counter0to10 port map (
-    Enable => E2, 
+    Enable => E3, 
     Reset => R2, 
     CLOCK => clk_1, 
     Round => Round, 
     end_round => end_round_interno
 );
 
-
--------------------ELEMENTOS DE MEMORIA-------------------------
-
 -- Registro para armazenar sequência digitada
 REG_SEQ_DIGITADA: reg10bits port map (
     CLK => clk_1, 
-    RST => R1, 
-    enable => E3, 
-    D => SW, 
+    RST => R2, 
+    enable => E2, 
+    D => SW(9 downto 0), 
     Q => SeqDigitada
 );
 
 -- Registro para sequência selecionada na ROM
-REG_SEQ_ROM: reg10bits port map (
+REG_SEQ_ROM: reg8bits port map (
     CLK => clk_1, 
-    RST => R1, 
-    enable => E4, 
-    D => SelecionadaROM, 
+    RST => R2, 
+    enable => E1, 
+    D => SW(7 downto 0), 
     Q => SeqLevel
 );
 
 -- ROM para sequência de nível
 ROM_SEQ: ROM port map (
-    address => Round, 
+    address => SeqLevel(3 downto 0), 
     data => SelecionadaROM
 );
 
 
----------------------MULTIPLEXADORES----------------------------
-
--- MUX para selecionar entre sequência digitada e sequência da ROM
-MUX_SEQ: mux2pra1_10bits port map (
-    sel => selMux23, 
-    x => SeqDigitada, 
-    y => SeqLevel, 
-    saida => ComparaSelDig
-);
-
-MUX_DISPLAY_7BITS: mux2pra1_7bits port map (
-    sel => selMux23,       -- Controle de seleção do mux
-    x   => decMux4,        -- Primeira entrada de 7 bits (pode ser ajustada ao seu projeto)
-    y   => muxMux2,        -- Segunda entrada de 7 bits
-    saida => muxMux3       -- Saída do mux para o próximo estágio
-);
-
-MUX_DISPLAY_8BITS: mux2pra1_8bits port map (
-    sel => selMux45,       -- Controle de seleção do mux
-    x   => SomaSelDig_estendido, -- Primeira entrada de 8 bits
-    y   => SeqLevel,       -- Segunda entrada de 8 bits (sequência do nível)
-    saida => MuxSelDig     -- Saída do mux
-);
-
-
--- MUX para selecionar entre rodadas ou tempo
-MUX_DISPLAY: mux2pra1_4bits port map (
-    sel => selMux45, 
-    x => Round, 
-    y => Tempo, 
-    saida => CounterTMux
-);
-
-
--------------------COMPARADORES E SOMA--------------------------
-
 -- Comparador de sequência
 COMPARADOR_SEQ: comp port map (
     seq_user => SeqDigitada, 
-    seq_reg => SeqLevel, 
-    seq_mask => EntradaLEDS
+    seq_reg => SelecionadaROM, 
+    seq_mask => SaidaComp
 );
 
 -- Somador para calcular bits digitados
 SOMADOR_BITS: soma port map (
-    seq => SeqDigitada, 
-    soma_out => SomaDigitada
+    seq => SaidaComp, 
+    soma_out => SaidaSoma
 );
 
 -- Comparador para verificar igualdade
 COMPARADOR_IGUAL: comp_igual4 port map (
-    soma => SomaDigitada, 
+    soma => SaidaSoma, 
     status => end_game_interno
 );
 
-        
----------------------DECODIFICADORES----------------------------
+-- Somador para calcular bits digitados
+SOMADOR_BITS2: soma port map (
+    seq => SeqDigitada, 
+    soma_out => SomaDigitada
+);
 
-    DECOD_DISPLAY_TEMPO: decod7seg port map (
-        X => CounterTMux,
-        Y => HEX0
-    );
 
-    DECOD_DISPLAY_RODADA: decod7seg port map (
-        X => Round,
-        Y => HEX1
-    );
+-- Comparador para verificar igualdade
+COMPARADOR_IGUAL2: comp_igual4 port map (
+    soma => SomaDigitada, 
+    status => sw_erro
+);
 
-    DECOD_DISPLAY_TEMPO_CONF: decod7seg port map (
-        X => SW(7 downto 4), -- Tempo configurado
-        Y => HEX2
-    );
 
-    DECOD_DISPLAY_SEQ: decod7seg port map (
-        X => SW(3 downto 0), -- Sequência configurada
-        Y => HEX3
-    );
-        
----------------------ATRIBUICOES DIRETAS---------------------
+MUX_HEX0_HEX1: mux2pra1_8bits port map (
+    sel => E5,       -- Controle de seleção do mux
+    x   => mux1, -- Primeira entrada de 8 bits
+    y   => mux2,       -- Segunda entrada de 8 bits (sequência do nível)
+    saida => SaidaMuxHEX1_HEX0     -- Saída do mux
+);
 
--- LEDs exibem a sequência da ROM
-LEDR <= SeqLevel;
+-- Registro para sequência selecionada na ROM
+REG_HEX0_HEX1: reg8bits port map (
+    CLK => clk_1, 
+    RST => R2, 
+    enable => E5E4, 
+    D => SaidaMuxHEX1_HEX0, 
+    Q => SaidaRegHEX1_HEX0
+);
+
+DECOD_HEX1: decod7seg port map (
+    X => SaidaRegHEX1_HEX0(7 downto 4),
+    Y => HEX1
+);
+
+DECOD_HEX0: decod7seg port map (
+    X => SaidaRegHEX1_HEX0(3 downto 0),
+    Y => HEX0
+);
+
+DECOD_HEX2_1: decod7seg port map (
+    X => Round,
+    Y => SaidaDecodHEX2_1
+);
+
+DECOD_HEX2_2: decod7seg port map (
+    X => SeqLevel(3 downto 0),
+    Y => SaidaDecodHEX2_2
+);
+
+
+MUX_HEX2_1: mux2pra1_7bits port map (
+    sel => R1R2,       -- Controle de seleção do mux
+    x   => SaidaDecodHEX2_1,        -- Primeira entrada de 7 bits (pode ser ajustada ao seu projeto)
+    y   => SaidaMuxHEX2_2,        -- Segunda entrada de 7 bits
+    saida => HEX2       -- Saída do mux para o próximo estágio
+);
+
+MUX_HEX2_2: mux2pra1_7bits port map (
+    sel => E1,       -- Controle de seleção do mux
+    x   => SaidaDecodHEX2_2,        -- Primeira entrada de 7 bits (pode ser ajustada ao seu projeto)
+    y   => "1111111",        -- Segunda entrada de 7 bits
+    saida => SaidaMuxHEX2_2       -- Saída do mux para o próximo estágio
+);
+
+MUX_HEX3_1: mux2pra1_7bits port map (
+    sel => E1,       -- Controle de seleção do mux
+    x   => "1010110",        -- n
+    y   => "1111111",        -- Segunda entrada de 7 bits
+    saida => SaidaMuxHEX3_1       -- Saída do mux para o próximo estágio
+);
+
+MUX_HEX3_2: mux2pra1_7bits port map (
+    sel => R1R2,       -- Controle de seleção do mux
+    x   => "1110110",        -- Primeira entrada de 7 bits (pode ser ajustada ao seu projeto)
+    y   => SaidaMuxHEX3_1,        -- Segunda entrada de 7 bits
+    saida => HEX3       -- Saída do mux para o próximo estágio
+);
+
+
+MUX_HEX4_1: mux2pra1_4bits port map (
+    sel => E2,       -- Controle de seleção do mux
+    x   => Tempo,        -- Primeira entrada de 7 bits (pode ser ajustada ao seu projeto)
+    y   => SeqLevel(7 downto 4),        -- Segunda entrada de 7 bits
+    saida => SaidaMuxHex4_1       -- Saída do mux para o próximo estágio
+);
+
+DECOD_HEX4: decod7seg port map (
+    X => SaidaMuxHex4_1,
+    Y => SaidaDecodHex4
+);
+
+MUX_HEX4_2: mux2pra1_7bits port map (
+    sel => E1E2,       -- Controle de seleção do mux
+    x   => SaidaDecodHex4,        -- Primeira entrada de 7 bits (pode ser ajustada ao seu projeto)
+    y   => "1111111",        -- Segunda entrada de 7 bits
+    saida => HEX4       -- Saída do mux para o próximo estágio
+);
+
+MUX_HEX5: mux2pra1_7bits port map (
+    sel => E1E2,       -- Controle de seleção do mux
+    x   => "1100010",        -- Primeira entrada de 7 bits (pode ser ajustada ao seu projeto)
+    y   => "1111111",        -- Segunda entrada de 7 bits
+    saida => HEX5       -- Saída do mux para o próximo estágio
+);
+
+MUX_LEDS: mux2pra1_10bits port map (
+    sel => E5, 
+    x => "0000000000", 
+    y => SelecionadaROM, 
+    saida => LEDR(9 downto 0)
+);
+
 
 -- Sinal de fim de jogo
 end_game <= end_game_interno;
