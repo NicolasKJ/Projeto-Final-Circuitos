@@ -19,7 +19,7 @@ begin
 	begin
 		if (BTN0 = '0') then
 			EA <= Start;
-		elsif (CLK'event AND CLK = '1') then 
+		elsif (clock_50'event AND clock_50 = '1') then 
 			EA <= PE;
 		end if;
 	end process;
@@ -28,8 +28,8 @@ begin
 	begin
 		case EA is
 			when Start => 
-				R1 <= '1';
-				R2 <= '1';
+				R1 <= '0';
+				R2 <= '0';
 				E1 <= '0';
 				E2 <= '0';
 				E3 <= '0';
@@ -59,9 +59,9 @@ begin
 				E3 <= '0';
 				E4 <= '0';
 				E5 <= '0';
-				if (BTN1 = '0') and (not end_time) then
+				if (BTN1 = '0') and (end_time = '0') then
 					PE <= Count_Round;
-				elsif end_time then
+				elsif (end_time = '1') then
 					PE <= Result;
 				end if;
 			
@@ -83,7 +83,7 @@ begin
 				E3 <= '1';
 				E4 <= '0';
 				E5 <= '0';
-				if sw_erro or end_round or end_game then
+				if (sw_erro = '1') or (end_round = '1') or (end_game = '1') then
 					PE <= Result;
 				else
 					PE <= Waits;
@@ -112,8 +112,8 @@ begin
 				if (BTN1 = '0') then
 					PE <= Start;
 				end if;
-
-
+        end case;
+    end process;
 
 
 end arc;

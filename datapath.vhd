@@ -336,7 +336,7 @@ MUX_HEX4_2: mux2pra1_7bits port map (
 
 MUX_HEX5: mux2pra1_7bits port map (
     sel => E1E2,       -- Controle de seleção do mux
-    x   => "1100010",        -- Primeira entrada de 7 bits (pode ser ajustada ao seu projeto)
+    x   => "1110011",        -- Primeira entrada de 7 bits (pode ser ajustada ao seu projeto)
     y   => "1111111",        -- Segunda entrada de 7 bits
     saida => HEX5       -- Saída do mux para o próximo estágio
 );

@@ -23,14 +23,14 @@ begin
             end_round <= '0';
         elsif Enable = '1' then
             if count = "1010" then  -- Quando chega a 10 (10 rodadas)
-                end_round <= '1';s
+                end_round <= '1';
                 count <= (others => '0');
             else
                 count <= count + 1;
                 end_round <= '0';
             end if;
         end if;
-    end processs;
+    end process;
 
     Round <= count;
 end Behavioral;

@@ -7,7 +7,7 @@ entity usertop is
 port (
 CLOCK_50:in std_logic; -- para uso na placa
 --CLK_500Hz:in std_logic; -- para uso no emulador
---CLK_1Hz:in std_logic; -- para uso no emulador
+CLK_1Hz:in std_logic; -- para uso no emulador
 KEY:in std_logic_vector(3 downto 0);
 SW:in std_logic_vector(17 downto 0);
 LEDR:out std_logic_vector(17 downto 0);
