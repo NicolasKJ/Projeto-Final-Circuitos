@@ -13,18 +13,19 @@ end entity;
 architecture arc of controle is
 	type State is (Start, Setup, Play, Count_Round, Check, Waits, Result); --Aqui temos os estados
 	signal EA, PE: State := Start; 		-- PE: proximo estado, EA: estado atual 
+begin	
+    process(clock_50, BTN0)
+    begin
+        if (clock_50'event AND clock_50 = '1') then 
+            if BTN0 = '0' then
+                EA <= Start; -- Reset para o estado inicial
+            else
+                EA <= PE; 
+            end if;
+        end if;
+    end process;
 
-begin
-	process(clock_50,BTN0)
-	begin
-		if (BTN0 = '0') then
-			EA <= Start;
-		elsif (clock_50'event AND clock_50 = '1') then 
-			EA <= PE;
-		end if;
-	end process;
-
-	process(EA,BTN1)
+	process(EA, BTN1, sw_erro, end_game, end_time, end_round)
 	begin
 		case EA is
 			when Start => 
@@ -36,12 +37,14 @@ begin
 				E4 <= '0';
 				E5 <= '0';
 				if (BTN1 = '0') then
-					PE <= Setup;
+				    if (BTN1 = '0') then
+					    PE <= Setup;
+			        end if;
 				end if;
 				
 			when Setup =>
-				R1 <= '1';
-				R2 <= '1';
+				R1 <= '0';
+				R2 <= '0';
 				E1 <= '1';
 				E2 <= '0';
 				E3 <= '0';

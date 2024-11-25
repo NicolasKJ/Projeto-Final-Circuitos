@@ -76,8 +76,8 @@ PM_datapath: datapath port map(
 );
 
 PM_controle: controle port map(
-											BTN1 => btn1,
-											BTN0 => btn0,
+											BTN1 => KEY(1), -- btn1,
+											BTN0 => KEY(0), --btn0,
 											clock_50 => CLOCK_50, -- CLOCK_50 na placa e CLK_500Hz no emulador
 											sw_erro => sw_erro,
 											end_game => end_game,
