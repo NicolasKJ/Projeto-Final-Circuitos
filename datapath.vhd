@@ -302,14 +302,14 @@ MUX_HEX2_2: mux2pra1_7bits port map (
 
 MUX_HEX3_1: mux2pra1_7bits port map (
     sel => E1,       -- Controle de seleção do mux
-    x   => "1010110",        -- n
-    y   => "1111111",        -- Segunda entrada de 7 bits
+    x   => "0101011",        -- n
+    y   => "1111111",        
     saida => SaidaMuxHEX3_1       -- Saída do mux para o próximo estágio
 );
 
 MUX_HEX3_2: mux2pra1_7bits port map (
     sel => R1R2,       -- Controle de seleção do mux
-    x   => "1110110",        -- Primeira entrada de 7 bits (pode ser ajustada ao seu projeto)
+    x   => "0101111",       -- r
     y   => SaidaMuxHEX3_1,        -- Segunda entrada de 7 bits
     saida => HEX3       -- Saída do mux para o próximo estágio
 );
@@ -336,16 +336,16 @@ MUX_HEX4_2: mux2pra1_7bits port map (
 
 MUX_HEX5: mux2pra1_7bits port map (
     sel => E1E2,       -- Controle de seleção do mux
-    x   => "1110011",        -- Primeira entrada de 7 bits (pode ser ajustada ao seu projeto)
+    x   => "0000111",        -- Primeira entrada de 7 bits (pode ser ajustada ao seu projeto)
     y   => "1111111",        -- Segunda entrada de 7 bits
     saida => HEX5       -- Saída do mux para o próximo estágio
 );
 
 MUX_LEDS: mux2pra1_10bits port map (
     sel => E5, 
-    x => "0000000000", 
-    y => SelecionadaROM, 
-    saida => LEDR(9 downto 0)
+    y => "0000000000", 
+    x => SelecionadaROM, 
+    saida => LEDR
 );
 
 

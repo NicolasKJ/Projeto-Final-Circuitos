@@ -13,7 +13,7 @@ architecture Behavioral of mux2pra1_8bits is
 begin
     process(sel, x, y)
     begin
-        if sel = '0' then
+        if sel = '1' then
             saida <= x;
         else
             saida <= y;

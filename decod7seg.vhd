@@ -9,7 +9,7 @@ end decod7seg;
 architecture behavior of decod7seg is
 begin
     with X select
-        Y <= "0000001" when "0000", -- 0
+        Y <= "1000000" when "0000", -- 0
              "1001111" when "0001", -- 1
              "0010010" when "0010", -- 2
              "0000110" when "0011", -- 3
@@ -23,5 +23,5 @@ begin
              "1010100" when "1011", -- n
              "1010000" when "1100", -- r
              "0001000" when "1101", -- A
-             "1111111" when others; -- Apaga
+             "1000000" when others; -- Apaga
 end behavior;

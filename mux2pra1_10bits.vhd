@@ -15,7 +15,7 @@ architecture mux_10bits of mux2pra1_10bits is
 begin
     process(sel, x, y)
     begin
-        if sel = '0' then
+        if sel = '1' then
             saida <= x;  -- Se sel for 0, a saída será x (SeqDigitada)
         else
             saida <= y;  -- Se sel for 1, a saída será y (SeqLevel)

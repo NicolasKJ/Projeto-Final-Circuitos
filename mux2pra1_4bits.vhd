@@ -15,7 +15,7 @@ architecture mux_4bits of mux2pra1_4bits is
 begin
     process(sel, x, y)
     begin
-        if sel = '0' then
+        if sel = '1' then
             saida <= x;  -- Se sel for 0, a saída será x (Round)
         else
             saida <= y;  -- Se sel for 1, a saída será y (Tempo)
