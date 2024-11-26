@@ -12,20 +12,18 @@ end entity;
 
 architecture arc of controle is
 	type State is (Start, Setup, Play, Count_Round, Check, Waits, Result); --Aqui temos os estados
-	signal EA, PE: State := Start; 		-- PE: proximo estado, EA: estado atual 
+	signal EA, PE: State; 		-- PE: proximo estado, EA: estado atual 
 begin	
-    process(clock_50, BTN0)
+    process(clock_50, BTN0, BTN1)
     begin
-        if (clock_50'event AND clock_50 = '1') then 
-            if BTN0 = '0' then
-                EA <= Start; -- Reset para o estado inicial
-            else
+        if BTN0 = '0' then
+            EA <= Start; -- Reset para o estado inicial
+        elsif (clock_50'event AND clock_50 = '1') then 
                 EA <= PE; 
             end if;
-        end if;
     end process;
 
-	process(EA, BTN1, sw_erro, end_game, end_time, end_round)
+	process(EA, BTN1, BTN0)
 	begin
 		case EA is
 			when Start => 
@@ -36,10 +34,11 @@ begin
 				E3 <= '0';
 				E4 <= '0';
 				E5 <= '0';
-				if (BTN1 = '0') then
-				    if (BTN1 = '0') then
+				if (falling_edge(BTN1)) then
 					    PE <= Setup;
-			        end if;
+				elsif (BTN0 = '0') then
+				        PE <= Start;
+
 				end if;
 				
 			when Setup =>
@@ -50,7 +49,7 @@ begin
 				E3 <= '0';
 				E4 <= '0';
 				E5 <= '0';
-				if (BTN1 = '0') then
+				if (falling_edge(BTN1)) then
 					PE <= Play;
 				end if;
 			
@@ -62,7 +61,7 @@ begin
 				E3 <= '0';
 				E4 <= '0';
 				E5 <= '0';
-				if (BTN1 = '0') and (end_time = '0') then
+				if (falling_edge(BTN1)) and (end_time = '0') then
 					PE <= Count_Round;
 				elsif (end_time = '1') then
 					PE <= Result;
@@ -100,7 +99,7 @@ begin
 				E3 <= '0';
 				E4 <= '1';
 				E5 <= '0';
-				if (BTN1 = '0') then
+				if (falling_edge(BTN1)) then
 					PE <= Play;
 				end if;
 			
@@ -112,7 +111,7 @@ begin
 				E3 <= '0';
 				E4 <= '0';
 				E5 <= '1';
-				if (BTN1 = '0') then
+				if (falling_edge(BTN1)) then
 					PE <= Start;
 				end if;
         end case;
