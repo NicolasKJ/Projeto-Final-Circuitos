@@ -16,15 +16,14 @@ end counter0to10;
 architecture Behavioral of counter0to10 is
     signal count : STD_LOGIC_VECTOR(3 downto 0);
 begin
-    process(CLOCK, Reset)
+    process(CLOCK, Reset, Enable)
     begin
         if Reset = '1' then
             count <= (others => '0');
             end_round <= '0';
-        elsif Enable = '1' then
+        elsif (Enable'event and Enable = '1') then
             if count = "1010" then  -- Quando chega a 10 (10 rodadas)
                 end_round <= '1';
-                count <= (others => '0');
             else
                 count <= count + 1;
                 end_round <= '0';

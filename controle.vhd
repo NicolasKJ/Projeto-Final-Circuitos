@@ -23,7 +23,7 @@ begin
             end if;
     end process;
 
-	process(EA, BTN1, BTN0)
+	process(EA, BTN1, BTN0, sw_erro, end_game, end_time, end_round)
 	begin
 		case EA is
 			when Start => 
@@ -34,7 +34,7 @@ begin
 				E3 <= '0';
 				E4 <= '0';
 				E5 <= '0';
-				if (falling_edge(BTN1)) then
+				if (BTN1'event and BTN1 = '0') then
 					    PE <= Setup;
 				elsif (BTN0 = '0') then
 				        PE <= Start;
@@ -49,7 +49,7 @@ begin
 				E3 <= '0';
 				E4 <= '0';
 				E5 <= '0';
-				if (falling_edge(BTN1)) then
+				if (BTN1'event and BTN1 = '0') then
 					PE <= Play;
 				end if;
 			
@@ -61,7 +61,7 @@ begin
 				E3 <= '0';
 				E4 <= '0';
 				E5 <= '0';
-				if (falling_edge(BTN1)) and (end_time = '0') then
+				if (BTN1'event and BTN1 = '0') and (end_time = '0') then
 					PE <= Count_Round;
 				elsif (end_time = '1') then
 					PE <= Result;
@@ -82,10 +82,10 @@ begin
 				R2 <= '0';
 				E1 <= '0';
 				E2 <= '0';
-				E3 <= '1';
+				E3 <= '0';
 				E4 <= '0';
 				E5 <= '0';
-				if (sw_erro = '1') or (end_round = '1') or (end_game = '1') then
+				if (sw_erro = '0') or (end_round = '1') or (end_game = '1') then
 					PE <= Result;
 				else
 					PE <= Waits;
@@ -99,7 +99,7 @@ begin
 				E3 <= '0';
 				E4 <= '1';
 				E5 <= '0';
-				if (falling_edge(BTN1)) then
+				if (BTN1'event and BTN1 = '0') then
 					PE <= Play;
 				end if;
 			
@@ -111,7 +111,7 @@ begin
 				E3 <= '0';
 				E4 <= '0';
 				E5 <= '1';
-				if (falling_edge(BTN1)) then
+				if (BTN1'event and BTN1 = '0') then
 					PE <= Start;
 				end if;
         end case;

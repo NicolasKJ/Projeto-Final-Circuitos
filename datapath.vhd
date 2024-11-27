@@ -164,7 +164,8 @@ signal naosigned: unsigned(3 downto 0);
 signal SeqDigitada, SelecionadaROM, SaidaComp : std_logic_vector(9 downto 0); -- 10 bits
 
 begin
-mux1 <= "000" & end_game_interno & Round;
+clk_1 <= CLOCK_50;
+mux1 <= "000" & end_game_interno & not Round;
 mux2 <= "1010" & SaidaSoma;
 E5E4 <= E5 or E4;
 R1R2 <= R1 xor R2;
@@ -185,14 +186,14 @@ COUNTER_T: counter_time port map (
 COUNTER_R: counter0to10 port map (
     Enable => E3, 
     Reset => R2, 
-    CLOCK => CLOCK_50, 
+    CLOCK => clk_1, 
     Round => Round, 
     end_round => end_round_interno
 );
 
 -- Registro para armazenar sequência digitada
 REG_SEQ_DIGITADA: reg10bits port map (
-    CLK => CLOCK_50, 
+    CLK => clk_1, 
     RST => R2, 
     enable => E2, 
     D => SW(9 downto 0), 
@@ -201,7 +202,7 @@ REG_SEQ_DIGITADA: reg10bits port map (
 
 -- Registro para sequência selecionada na ROM
 REG_SEQ_ROM: reg8bits port map (
-    CLK => CLOCK_50, 
+    CLK => clk_1, 
     RST => R2, 
     enable => E1, 
     D => SW(7 downto 0), 
@@ -257,7 +258,7 @@ MUX_HEX0_HEX1: mux2pra1_8bits port map (
 
 -- Registro para sequência selecionada na ROM
 REG_HEX0_HEX1: reg8bits port map (
-    CLK => CLOCK_50, 
+    CLK => clk_1, 
     RST => R2, 
     enable => E5E4, 
     D => SaidaMuxHEX1_HEX0, 
