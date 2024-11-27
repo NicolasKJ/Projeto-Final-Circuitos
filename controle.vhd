@@ -14,7 +14,7 @@ architecture arc of controle is
 	type State is (Start, Setup, Play, Count_Round, Check, Waits, Result); --Aqui temos os estados
 	signal EA, PE: State; 		-- PE: proximo estado, EA: estado atual 
 begin	
-    process(clock_50, BTN0, BTN1)
+    process(clock_50, BTN0)
     begin
         if BTN0 = '0' then
             EA <= Start; -- Reset para o estado inicial
@@ -34,9 +34,9 @@ begin
 				E3 <= '0';
 				E4 <= '0';
 				E5 <= '0';
-				if (BTN1'event and BTN1 = '0') then
+				if (BTN1 = '0') then
 					    PE <= Setup;
-				elsif (BTN0 = '0') then
+                    else
 				        PE <= Start;
 
 				end if;
@@ -49,8 +49,10 @@ begin
 				E3 <= '0';
 				E4 <= '0';
 				E5 <= '0';
-				if (BTN1'event and BTN1 = '0') then
+				if (BTN1 = '0') then
 					PE <= Play;
+				else
+				    PE <= Setup;
 				end if;
 			
 			when Play =>
@@ -61,10 +63,12 @@ begin
 				E3 <= '0';
 				E4 <= '0';
 				E5 <= '0';
-				if (BTN1'event and BTN1 = '0') and (end_time = '0') then
+				if (BTN1 = '0') and (end_time = '0') then
 					PE <= Count_Round;
 				elsif (end_time = '1') then
 					PE <= Result;
+				else
+				    PE <= Play;
 				end if;
 			
 			when Count_Round =>
@@ -99,8 +103,10 @@ begin
 				E3 <= '0';
 				E4 <= '1';
 				E5 <= '0';
-				if (BTN1'event and BTN1 = '0') then
+				if (BTN1 = '0') then
 					PE <= Play;
+				else
+				    PE <= Waits;
 				end if;
 			
 			when Result =>
@@ -111,8 +117,10 @@ begin
 				E3 <= '0';
 				E4 <= '0';
 				E5 <= '1';
-				if (BTN1'event and BTN1 = '0') then
+				if (BTN1 = '0') then
 					PE <= Start;
+				else
+				    PE <= Result;
 				end if;
         end case;
     end process;

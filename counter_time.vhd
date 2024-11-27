@@ -25,7 +25,6 @@ begin
         elsif Enable = '1' then
             if count = load then
                 end_time <= '1';  -- Sinaliza que o tempo acabou
-                count <= (others => '0');  -- Reseta o contador
             else
                 count <= count + 1;
                 end_time <= '0';
