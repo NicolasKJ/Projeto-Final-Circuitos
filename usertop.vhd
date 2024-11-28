@@ -6,8 +6,6 @@ use IEEE.Std_Logic_1164.all;
 entity usertop is
 port (
 CLOCK_50:in std_logic; -- para uso na placa
---CLK_500Hz:in std_logic; -- para uso no emulador
-CLK_1Hz:in std_logic; -- para uso no emulador
 KEY:in std_logic_vector(3 downto 0);
 SW:in std_logic_vector(17 downto 0);
 LEDR:out std_logic_vector(17 downto 0);
@@ -20,7 +18,7 @@ architecture arc of usertop is
 component datapath is
 port (
 SW: in std_logic_vector(9 downto 0);
-CLOCK_50, CLK_1Hz: in std_logic;
+CLOCK_50: in std_logic;
 R1, R2, E1, E2, E3, E4, E5: in std_logic;
 sw_erro, end_game, end_time, end_round: out std_logic;
 HEX0, HEX1, HEX2, HEX3, HEX4, HEX5: out std_logic_vector(6 downto 0);
@@ -53,8 +51,7 @@ begin
 
 PM_datapath: datapath port map(
 											SW => SW(9 downto 0),
-											CLOCK_50 => CLOCK_50, -- CLOCK_50 na placa e CLK_500Hz no emulador
-											CLK_1Hz => CLK_1Hz,  -- deixar assim para possível uso no emulador
+											CLOCK_50 => CLOCK_50, -- CLOCK_50 na placa 
 											R1 => R1,
 											R2 => R2,
 											E1 => E1,
@@ -78,7 +75,7 @@ PM_datapath: datapath port map(
 PM_controle: controle port map(
 											BTN1 => btn1, -- btn1,
 											BTN0 => btn0, --btn0,
-											clock_50 => CLOCK_50, -- CLOCK_50 na placa e CLK_500Hz no emulador
+											clock_50 => CLOCK_50, -- CLOCK_50 na placa 
 											sw_erro => sw_erro,
 											end_game => end_game,
 											end_time => end_time,
@@ -93,9 +90,9 @@ PM_controle: controle port map(
 );
 
 PM_ButtonSync: ButtonSync port map(
-												KEY0 => KEY(0), 
-												KEY1 => KEY(1), 
-												CLK => CLOCK_50, -- CLOCK_50 na placa e CLK_500Hz no emulador
+												KEY0 => KEY(2), 
+												KEY1 => KEY(3), 
+												CLK => CLOCK_50, -- CLOCK_50 na placa 
 												BTN0 => btn0,
 												BTN1 => btn1
 );

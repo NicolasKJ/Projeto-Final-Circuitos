@@ -3,28 +3,27 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity reg4bits is
     port (
-        CLK     : in std_logic;                -- Clock
-        RST     : in std_logic;                -- Reset (síncrono)
-        enable  : in std_logic;                -- Habilita ou desabilita o registro
+        CLK     : in std_logic;
+        RST     : in std_logic; 
+        enable  : in std_logic;                
         D       : in std_logic_vector(3 downto 0);  
         Q       : out std_logic_vector(3 downto 0)  
     );
 end entity reg4bits;
 
-architecture reg4bits_arch of reg4bits is
-    signal Q_internal : std_logic_vector(3 downto 0); -- Sinal intermediário
+architecture reg4bitsarc of reg4bits is
+    signal Q_interno : std_logic_vector(3 downto 0) := "0000";
 begin
-    -- Atribuição do sinal interno para a porta de saída
-    Q <= Q_internal;
+    Q <= Q_interno;
 
     process(CLK)
     begin
-        if rising_edge(CLK) then  -- Verifica o flanco de subida do clock
+        if (CLK'event and CLK = '1') then  
             if RST = '1' then
-                Q_internal <= (others => '0');  -- Reset síncrono: zera o registrador
+                Q_interno <= "0000";  
             elsif enable = '1' then
-                Q_internal <= D;  -- Armazena o valor de entrada
+                Q_interno <= D; 
             end if;
         end if;
     end process;
-end architecture reg4bits_arch;
+end reg4bitsarc;

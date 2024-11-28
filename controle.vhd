@@ -11,13 +11,13 @@ R1, R2, E1, E2, E3, E4, E5: out std_logic
 end entity;
 
 architecture arc of controle is
-	type State is (Start, Setup, Play, Count_Round, Check, Waits, Result); --Aqui temos os estados
-	signal EA, PE: State; 		-- PE: proximo estado, EA: estado atual 
+	type State is (Start, Setup, Play, Count_Round, Check, Waits, Result);
+	signal EA, PE: State; 	
 begin	
     process(clock_50, BTN0)
     begin
         if BTN0 = '0' then
-            EA <= Start; -- Reset para o estado inicial
+            EA <= Start; 
         elsif (clock_50'event AND clock_50 = '1') then 
                 EA <= PE; 
             end if;

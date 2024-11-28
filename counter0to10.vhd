@@ -1,35 +1,36 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity counter0to10 is
-    Port ( 
-        Enable : in STD_LOGIC;
-        Reset : in STD_LOGIC;
-        CLOCK : in STD_LOGIC;
-        Round : out STD_LOGIC_VECTOR(3 downto 0);  -- Número da rodada (0 a 10)
-        end_round : out STD_LOGIC  -- Sinaliza o fim da rodada
+    Port (
+        Enable: in  std_logic;
+        Reset : in std_logic;
+        CLOCK : in std_logic;
+        Round : out std_logic_vector(3 downto 0);  
+        end_round : out std_logic 
     );
 end counter0to10;
 
-architecture Behavioral of counter0to10 is
-    signal count : STD_LOGIC_VECTOR(3 downto 0);
+architecture Contar of counter0to10 is
+    signal count : std_logic_vector(3 downto 0) := "0000";
+
 begin
-    process(CLOCK, Reset, Enable)
+    process(CLOCK, Reset)
     begin
+    if Enable = '1' then
         if Reset = '1' then
-            count <= (others => '0');
+            count <= "0000";
             end_round <= '0';
-        elsif (Enable'event and Enable = '1') then
-            if count = "1010" then  -- Quando chega a 10 (10 rodadas)
+        elsif (CLOCK 'event and CLOCK = '1') then 
+            if count = "1010" then 
                 end_round <= '1';
             else
                 count <= count + 1;
                 end_round <= '0';
             end if;
         end if;
+    end if;
     end process;
-
     Round <= count;
-end Behavioral;
+end Contar;

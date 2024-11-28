@@ -2,11 +2,13 @@ library IEEE;
 use IEEE.Std_Logic_1164.all;
 
 entity decod7seg is
-port (X:  in std_logic_vector(3 downto 0);
-      Y:  out std_logic_vector(6 downto 0) );
+    port (
+        X : in std_logic_vector(3 downto 0);
+        Y : out std_logic_vector(6 downto 0)
+    );
 end decod7seg;
 
-architecture behavior of decod7seg is
+architecture Arquitetura of decod7seg is
 begin
     with X select
         Y <= "1000000" when "0000", -- 0
@@ -25,5 +27,5 @@ begin
              "0100001" when "1101", -- d
              "0000110" when "1110", -- E
              "0001110" when "1111", -- F
-             "1111111" when others;  -- Desliga todos os segmentos (ou erro)
-end behavior;
+             "1111111" when others;  -- Desliga td
+end Arquitetura;

@@ -9,7 +9,7 @@ entity datapath is
 port (
 -- Entradas de dados
 SW: in std_logic_vector(9 downto 0);
-CLOCK_50, CLK_1Hz: in std_logic;
+CLOCK_50: in std_logic;
 -- Sinais de controle
 R1, R2, E1, E2, E3, E4, E5: in std_logic;
 -- Sinais de status
@@ -124,8 +124,8 @@ end component;
 component comp is
 port (
     seq_user: in std_logic_vector(9 downto 0);
-    seq_reg: in std_logic_vector(9 downto 0);
-    seq_mask: out std_logic_vector(9 downto 0)
+    seq_rom: in std_logic_vector(9 downto 0);
+    seq_comparada: out std_logic_vector(9 downto 0)
     );
 end component;
 
@@ -164,19 +164,18 @@ signal naosigned: unsigned(3 downto 0);
 signal SeqDigitada, SelecionadaROM, SaidaComp : std_logic_vector(9 downto 0); -- 10 bits
 
 begin
-clk_1 <= CLOCK_50;
 mux1 <= "000" & end_game_interno & not Round;
 mux2 <= "1010" & SaidaSoma;
 E5E4 <= E5 or E4;
 R1R2 <= R1 xor R2;
 E1E2 <= E1 or E2;
--- DIV: Div_Freq port map (CLOCK_50, R2, clk_1); -- Para teste no emulador, comentar essa linha e usar o CLK_1Hz
+DIV: Div_Freq port map (CLOCK_50, R2, clk_1); -- Para teste no emulador, comentar essa linha e usar o CLK_1Hz
 
 -- Contador de tempo
 COUNTER_T: counter_time port map (
     Enable => E2, 
     Reset => R1, 
-    CLOCK => CLK_1Hz, 
+    CLOCK => clk_1, 
     load => SeqLevel(7 downto 4), 
     end_time => end_time, 
     tempo => Tempo
@@ -186,14 +185,14 @@ COUNTER_T: counter_time port map (
 COUNTER_R: counter0to10 port map (
     Enable => E3, 
     Reset => R2, 
-    CLOCK => clk_1, 
+    CLOCK => CLOCK_50, 
     Round => Round, 
     end_round => end_round_interno
 );
 
 -- Registro para armazenar sequência digitada
 REG_SEQ_DIGITADA: reg10bits port map (
-    CLK => clk_1, 
+    CLK => CLOCK_50, 
     RST => R2, 
     enable => E2, 
     D => SW(9 downto 0), 
@@ -202,7 +201,7 @@ REG_SEQ_DIGITADA: reg10bits port map (
 
 -- Registro para sequência selecionada na ROM
 REG_SEQ_ROM: reg8bits port map (
-    CLK => clk_1, 
+    CLK => CLOCK_50, 
     RST => R2, 
     enable => E1, 
     D => SW(7 downto 0), 
@@ -219,8 +218,8 @@ ROM_SEQ: ROM port map (
 -- Comparador de sequência
 COMPARADOR_SEQ: comp port map (
     seq_user => SeqDigitada, 
-    seq_reg => SelecionadaROM, 
-    seq_mask => SaidaComp
+    seq_rom => SelecionadaROM, 
+    seq_comparada => SaidaComp
 );
 
 -- Somador para calcular bits digitados
@@ -258,7 +257,7 @@ MUX_HEX0_HEX1: mux2pra1_8bits port map (
 
 -- Registro para sequência selecionada na ROM
 REG_HEX0_HEX1: reg8bits port map (
-    CLK => clk_1, 
+    CLK => CLOCK_50, 
     RST => R2, 
     enable => E5E4, 
     D => SaidaMuxHEX1_HEX0, 

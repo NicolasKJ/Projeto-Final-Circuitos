@@ -9,14 +9,8 @@ entity mux2pra1_8bits is
     );
 end mux2pra1_8bits;
 
-architecture Behavioral of mux2pra1_8bits is
+architecture mux8bits of mux2pra1_8bits is
 begin
-    process(sel, x, y)
-    begin
-        if sel = '1' then
-            saida <= x;
-        else
-            saida <= y;
-        end if;
-    end process;
-end Behavioral;
+    with sel select saida <= x when '1',
+	                         y when others;
+end mux8bits;
