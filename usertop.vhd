@@ -90,8 +90,8 @@ PM_controle: controle port map(
 );
 
 PM_ButtonSync: ButtonSync port map(
-												KEY0 => KEY(2), 
-												KEY1 => KEY(3), 
+												KEY0 => KEY(0), 
+												KEY1 => KEY(1), 
 												CLK => CLOCK_50, -- CLOCK_50 na placa 
 												BTN0 => btn0,
 												BTN1 => btn1

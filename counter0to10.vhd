@@ -18,13 +18,15 @@ architecture Contar of counter0to10 is
 begin
     process(CLOCK, Reset)
     begin
-    if Enable = '1' then
-        if Reset = '1' then
+    if Reset = '1' then
             count <= "0000";
             end_round <= '0';
-        elsif (CLOCK 'event and CLOCK = '1') then 
-            if count = "1010" then 
+    elsif Enable = '1' then
+        if (CLOCK 'event and CLOCK = '1') then 
+            if count = "1001" then 
                 end_round <= '1';
+                count <= "1010";
+
             else
                 count <= count + 1;
                 end_round <= '0';
