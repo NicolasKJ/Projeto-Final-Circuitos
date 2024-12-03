@@ -12,7 +12,7 @@ end comp;
 architecture Comparar of comp is
 begin
     process(seq_rom, seq_user)
-    begin
+     begin
         if seq_rom(0) = seq_user(0) then
             seq_comparada(0) <= seq_user(0);
         else

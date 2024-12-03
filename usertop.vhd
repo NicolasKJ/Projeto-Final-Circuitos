@@ -6,6 +6,7 @@ use IEEE.Std_Logic_1164.all;
 entity usertop is
 port (
 CLOCK_50:in std_logic; -- para uso na placa
+clk1:in std_logic;
 KEY:in std_logic_vector(3 downto 0);
 SW:in std_logic_vector(17 downto 0);
 LEDR:out std_logic_vector(17 downto 0);
@@ -19,6 +20,7 @@ component datapath is
 port (
 SW: in std_logic_vector(9 downto 0);
 CLOCK_50: in std_logic;
+clk1: in std_logic;
 R1, R2, E1, E2, E3, E4, E5: in std_logic;
 sw_erro, end_game, end_time, end_round: out std_logic;
 HEX0, HEX1, HEX2, HEX3, HEX4, HEX5: out std_logic_vector(6 downto 0);
@@ -51,7 +53,8 @@ begin
 
 PM_datapath: datapath port map(
 											SW => SW(9 downto 0),
-											CLOCK_50 => CLOCK_50, -- CLOCK_50 na placa 
+											CLOCK_50 => CLOCK_50,-- CLOCK_50 na placa
+											clk1 => clk1,
 											R1 => R1,
 											R2 => R2,
 											E1 => E1,

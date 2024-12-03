@@ -6,7 +6,7 @@ entity counter_time is
     Port ( 
         Enable : in STD_LOGIC;
         Reset : in STD_LOGIC;
-        CLOCK : in STD_LOGIC;
+        CLOCK : in STD_LOGIC; -- Deve ser o clk_1
         load : in STD_LOGIC_VECTOR(3 downto 0); 
         end_time : out STD_LOGIC;             
         tempo : out STD_LOGIC_VECTOR(3 downto 0) --
